@@ -1,0 +1,6 @@
+{
+  "name": "Sistem Monitoring Ruangan Server 3D",
+  "description": "Dashboard Monitoring Lingkungan Ruangan Server Suhu, Kelembaban, Deteksi Asap Real-Time 3D Three.js dan Dokumen PRD Lengkap.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
