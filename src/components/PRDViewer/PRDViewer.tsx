@@ -81,8 +81,13 @@ export const PRDViewer: React.FC = () => {
       {/* Top Bar */}
       <div className="bg-[#121824] border-b border-slate-800 px-6 py-4 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
-            <BookOpen className="w-5 h-5" />
+          <div className="w-11 h-11 rounded-xl bg-white/10 border border-slate-700/80 p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/id/c/ca/Logo_Poltekbang_Makassar.png"
+              alt="Logo Poltekbang Makassar"
+              className="w-full h-full object-contain"
+              referrerPolicy="no-referrer"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -94,7 +99,7 @@ export const PRDViewer: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-400">
-              Dokumen Persyaratan Produk (PRD) Resmi • Format Google Docs Sync
+              Politeknik Penerbangan Makassar • Dokumen Persyaratan Produk (PRD) Resmi
             </p>
           </div>
         </div>

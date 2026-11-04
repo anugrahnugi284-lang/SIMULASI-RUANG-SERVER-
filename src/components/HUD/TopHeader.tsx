@@ -14,6 +14,7 @@ import {
   LineChart,
   ListFilter,
   Layers,
+  Gauge,
 } from 'lucide-react';
 import { RackData, CRACUnitData, SmokeDetectorData, AlertEvent } from '../../types/monitoring';
 import { soundManager } from '../../services/soundEffects';
@@ -23,8 +24,8 @@ interface TopHeaderProps {
   cracs: CRACUnitData[];
   smokeDetectors: SmokeDetectorData[];
   alerts: AlertEvent[];
-  activeTab: '3d' | 'analytics' | 'logs' | 'prd';
-  setActiveTab: (tab: '3d' | 'analytics' | 'logs' | 'prd') => void;
+  activeTab: '3d' | 'gauges' | 'analytics' | 'logs' | 'prd';
+  setActiveTab: (tab: '3d' | 'gauges' | 'analytics' | 'logs' | 'prd') => void;
   onOpenThresholds: () => void;
   onOpenWebhooks: () => void;
   onOpenDrills: () => void;
@@ -43,6 +44,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
 }) => {
   const [isMuted, setIsMuted] = useState<boolean>(soundManager.getMuted());
   const [timeStr, setTimeStr] = useState<string>('');
+  const [logoError, setLogoError] = useState<boolean>(false);
 
   useEffect(() => {
     const updateTime = () => {
@@ -79,14 +81,24 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
 
   return (
     <header className="w-full bg-[#0d1117] border-b border-slate-800 text-slate-200 px-4 py-2.5 z-30 flex flex-wrap items-center justify-between gap-3 shadow-md">
-      {/* Brand & System Title */}
+      {/* Brand & System Title with Poltekbang Makassar Logo */}
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-          <Server className="w-5 h-5" />
+        <div className="w-10 h-10 rounded-xl bg-white/10 border border-slate-700/80 p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+          {!logoError ? (
+            <img
+              src="https://upload.wikimedia.org/wikipedia/id/c/ca/Logo_Poltekbang_Makassar.png"
+              alt="Logo Poltekbang Makassar"
+              className="w-full h-full object-contain"
+              referrerPolicy="no-referrer"
+              onError={() => setLogoError(true)}
+            />
+          ) : (
+            <Server className="w-5 h-5 text-emerald-400" />
+          )}
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-bold text-sm tracking-wide text-white">DataCenter 3D Sentinel</h1>
+            <h1 className="font-bold text-sm tracking-wide text-white">DataCenter Poltekbang Makassar</h1>
             <span
               className={`text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase ${
                 healthStatus === 'CRITICAL'
@@ -99,7 +111,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
               {healthStatus === 'CRITICAL' ? 'CRITICAL ALERT' : healthStatus === 'WARNING' ? 'WARNING' : 'HEALTHY'}
             </span>
           </div>
-          <p className="text-[11px] text-slate-400">Sistem Monitoring Ruangan Server (Suhu, Kelembaban, Deteksi Asap)</p>
+          <p className="text-[11px] text-slate-400">Sistem Monitoring Ruangan Server 3D (Suhu, Kelembaban, Deteksi Asap)</p>
         </div>
       </div>
 
@@ -156,6 +168,19 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         >
           <Layers className="w-3.5 h-3.5" />
           <span>3D Twin</span>
+        </button>
+
+        <button
+          onClick={() => {
+            soundManager.playClick();
+            setActiveTab('gauges');
+          }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors ${
+            activeTab === 'gauges' ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <Gauge className="w-3.5 h-3.5" />
+          <span>Gauges</span>
         </button>
 
         <button

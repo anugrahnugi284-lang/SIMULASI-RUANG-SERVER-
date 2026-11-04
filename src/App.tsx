@@ -24,6 +24,7 @@ import { ThresholdSettingsModal } from './components/HUD/ThresholdSettingsModal'
 import { WebhookModal } from './components/HUD/WebhookModal';
 import { IncidentDrillModal } from './components/SimulationModal/IncidentDrillModal';
 import { ThreeViewer } from './components/ThreeCanvas/ThreeViewer';
+import { GaugeDashboard } from './components/Gauges/GaugeDashboard';
 import { TelemetryCharts } from './components/Analytics/TelemetryCharts';
 import { EventLogView } from './components/EventLog/EventLogView';
 import { PRDViewer } from './components/PRDViewer/PRDViewer';
@@ -31,7 +32,7 @@ import { soundManager } from './services/soundEffects';
 
 export default function App() {
   // Navigation
-  const [activeTab, setActiveTab] = useState<'3d' | 'analytics' | 'logs' | 'prd'>('3d');
+  const [activeTab, setActiveTab] = useState<'3d' | 'gauges' | 'analytics' | 'logs' | 'prd'>('3d');
 
   // Telemetry state synced from telemetryStore
   const [racks, setRacks] = useState<RackData[]>(telemetryStore.getRacks());
@@ -186,7 +187,29 @@ export default function App() {
           />
         </div>
 
-        {/* Tab 2: Analytics & Time-series Trends */}
+        {/* Tab 2: Radial Gauge Telemetry Dashboard */}
+        {activeTab === 'gauges' && (
+          <div className="w-full h-full">
+            <GaugeDashboard
+              racks={racks}
+              cracs={cracs}
+              smokeDetectors={smokeDetectors}
+              thresholds={thresholds}
+              onSelectRack3D={(rackId) => {
+                setSelectedRackId(rackId);
+                setActiveTab('3d');
+              }}
+              onOpenThresholds={() => {
+                soundManager.playClick();
+                setIsThresholdsOpen(true);
+              }}
+              onSimulateScenario={handleSimulateScenario}
+              simulationScenario={simulationScenario}
+            />
+          </div>
+        )}
+
+        {/* Tab 3: Analytics & Time-series Trends */}
         {activeTab === 'analytics' && (
           <div className="w-full h-full">
             <TelemetryCharts history={history} racks={racks} thresholds={thresholds} />

@@ -1,0 +1,6 @@
+{
+  "summary": "Rencana implementasi dasbor dial radial gauge untuk memvisualisasikan telemetri sensor ruangan server (suhu, kelembaban, deteksi asap, dan daya PDU) dengan circular arc, jarum indikator, zona aman ASHRAE, serta pemilih rak individual.",
+  "updatedAt": "2026-11-04T07:26:25.283343909Z",
+  "requestFeedback": true,
+  "userFacing": true
+}
