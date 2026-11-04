@@ -131,7 +131,7 @@ export class ServerRoomScene {
       roughness: 0.15,
       metalness: 0.2,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.18,
     });
   }
 
@@ -330,29 +330,73 @@ export class ServerRoomScene {
     doorMesh.position.set(0, rackHeight / 2 + 0.06, frontZ);
     rackGroup.add(doorMesh);
 
-    // Part 7: Internal Stacked Server Blade Modules (1U to 4U units)
-    const bladeGeo = new THREE.BoxGeometry(rackWidth - 0.12, 0.22, rackDepth - 0.2);
-    const bladeMat = new THREE.MeshStandardMaterial({
-      map: this.serverGrillTexture,
-      roughness: 0.4,
-      metalness: 0.7,
+    // Part 7: Internal Stacked 4U 24-Bay Hot-Swap Storage Chassis (Matching Reference)
+    const bladeW = rackWidth - 0.10;
+    const bladeH = 0.25;
+    const bladeD = rackDepth - 0.16;
+    const bladeGeo = new THREE.BoxGeometry(bladeW, bladeH, bladeD);
+
+    // Silver brushed sheet metal top & sides (matching reference photo's top light metal casing)
+    const chassisSilverMat = new THREE.MeshStandardMaterial({
+      color: '#d0d7de',
+      roughness: 0.35,
+      metalness: 0.85,
     });
+
+    // Front face with 24-bay hot-swap texture
+    const frontFaceMat = new THREE.MeshStandardMaterial({
+      map: this.serverGrillTexture,
+      roughness: 0.3,
+      metalness: 0.55,
+    });
+
+    // Rear face
+    const rearFaceMat = new THREE.MeshStandardMaterial({
+      color: '#1a1e27',
+      roughness: 0.6,
+      metalness: 0.6,
+    });
+
+    // 3D Physical Silver Handles on Left & Right Ears (matching reference photo)
+    const handleMat = new THREE.MeshStandardMaterial({
+      color: '#f8fafc',
+      metalness: 0.95,
+      roughness: 0.15,
+    });
+    const handleGeo = new THREE.BoxGeometry(0.018, bladeH * 0.68, 0.04);
 
     const chassisList: THREE.Mesh[] = [];
     const bladeCount = 8;
     for (let b = 0; b < bladeCount; b++) {
-      const blade = new THREE.Mesh(bladeGeo, bladeMat);
-      const by = 0.28 + b * 0.26;
-      blade.position.set(0, by, 0);
+      // Box face order: [+X, -X, +Y, -Y, +Z, -Z]
+      // Row A faces +Z (face 4 is front), Row B faces -Z (face 5 is front)
+      const materials = isRowA
+        ? [chassisSilverMat, chassisSilverMat, chassisSilverMat, chassisSilverMat, frontFaceMat, rearFaceMat]
+        : [chassisSilverMat, chassisSilverMat, chassisSilverMat, chassisSilverMat, rearFaceMat, frontFaceMat];
+
+      const blade = new THREE.Mesh(bladeGeo, materials);
+      const by = 0.28 + b * 0.265;
+      const bladeZ = isRowA ? 0.025 : -0.025;
+      blade.position.set(0, by, bladeZ);
       blade.castShadow = !this.isSoftwareGl;
       rackGroup.add(blade);
       chassisList.push(blade);
 
-      // Micro LED Activity Dots on server front
-      const ledGeo = new THREE.BoxGeometry(0.015, 0.015, 0.01);
+      // Add 3D physical silver handles on left and right rackmount ears
+      const handleZ = isRowA ? bladeZ + bladeD / 2 + 0.015 : bladeZ - bladeD / 2 - 0.015;
+      const leftHandle = new THREE.Mesh(handleGeo, handleMat);
+      leftHandle.position.set(-bladeW / 2 + 0.035, by, handleZ);
+      rackGroup.add(leftHandle);
+
+      const rightHandle = new THREE.Mesh(handleGeo, handleMat);
+      rightHandle.position.set(bladeW / 2 - 0.035, by, handleZ);
+      rackGroup.add(rightHandle);
+
+      // Micro LED Activity Dots on server front control ear
+      const ledGeo = new THREE.BoxGeometry(0.012, 0.012, 0.01);
       const ledMat = new THREE.MeshBasicMaterial({ color: b % 2 === 0 ? '#10b981' : '#38bdf8' });
       const led1 = new THREE.Mesh(ledGeo, ledMat);
-      led1.position.set(-0.35, by, frontZ + (isRowA ? 0.015 : -0.015));
+      led1.position.set(-bladeW / 2 + 0.05, by - 0.03, handleZ + (isRowA ? 0.01 : -0.01));
       rackGroup.add(led1);
     }
     this.rackChassisMeshes.set(rack.id, chassisList);
@@ -653,11 +697,25 @@ export class ServerRoomScene {
 
       if (chassisMeshes && mode === 'thermal') {
         chassisMeshes.forEach((mesh) => {
-          (mesh.material as THREE.MeshStandardMaterial).color.set(statusColor);
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach((m) => (m as THREE.MeshStandardMaterial).color.set(statusColor));
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set(statusColor);
+          }
         });
       } else if (chassisMeshes && mode !== 'thermal') {
         chassisMeshes.forEach((mesh) => {
-          (mesh.material as THREE.MeshStandardMaterial).color.set('#1a1e27');
+          if (Array.isArray(mesh.material)) {
+            // Restore top, bottom, and side brushed silver
+            (mesh.material[0] as THREE.MeshStandardMaterial).color.set('#d0d7de');
+            (mesh.material[1] as THREE.MeshStandardMaterial).color.set('#d0d7de');
+            (mesh.material[2] as THREE.MeshStandardMaterial).color.set('#d0d7de');
+            (mesh.material[3] as THREE.MeshStandardMaterial).color.set('#d0d7de');
+            if (mesh.material[4]) (mesh.material[4] as THREE.MeshStandardMaterial).color.set('#ffffff');
+            if (mesh.material[5]) (mesh.material[5] as THREE.MeshStandardMaterial).color.set('#ffffff');
+          } else {
+            (mesh.material as THREE.MeshStandardMaterial).color.set('#1a1e27');
+          }
         });
       }
     });

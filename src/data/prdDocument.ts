@@ -13,7 +13,7 @@ export const PRD_METADATA = {
   title: 'PRD: Sistem Monitoring Ruangan Server 3D (Suhu, Kelembaban, Deteksi Asap)',
   titleEn: 'PRD: 3D Server Room Environmental Monitoring System (Temperature, Humidity, Smoke Detection)',
   documentCode: 'PRD-DC-ENV-3D-V2.4',
-  author: 'Data Center Infrastructure Engineering & SRE Team',
+  author: 'MUH. ANUGRAH NASIR (Politeknik Penerbangan Makassar)',
   status: 'Approved / In Production',
   lastUpdated: '2026-11-04',
   targetPlatform: 'Web SPA (Three.js r170+, WebGL 2.0 / WebGPU)',

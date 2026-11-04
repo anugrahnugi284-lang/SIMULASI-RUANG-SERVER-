@@ -81,30 +81,222 @@ export function createPerforatedVentTexture(): THREE.CanvasTexture {
 }
 
 export function createServerGrillTexture(): THREE.CanvasTexture {
+  return createEnterpriseStorageServerTexture();
+}
+
+/**
+ * High-Fidelity 24-Bay Hot-Swap Storage Server Chassis Front Texture
+ * Modeled directly from enterprise 4U rackmount server reference (4 cols x 6 rows = 24 bays).
+ */
+export function createEnterpriseStorageServerTexture(): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
-  canvas.width = 256;
+  canvas.width = 1024;
   canvas.height = 512;
   const ctx = canvas.getContext('2d')!;
 
-  // Matte chassis
-  ctx.fillStyle = '#11141a';
-  ctx.fillRect(0, 0, 256, 512);
+  // 1. Dark Brushed Metal Chassis Bezel Frame
+  ctx.fillStyle = '#0c0f14';
+  ctx.fillRect(0, 0, 1024, 512);
 
-  // Server rack honeycomb / slotted vent rows
-  ctx.fillStyle = '#05070a';
-  for (let y = 10; y < 500; y += 12) {
-    for (let x = 12; x < 244; x += 18) {
-      ctx.fillRect(x, y, 10, 4);
-    }
-  }
+  // Outer top/bottom brushed silver highlight strip
+  ctx.fillStyle = '#c8d1db';
+  ctx.fillRect(0, 0, 1024, 8);
+  ctx.fillRect(0, 504, 1024, 8);
 
-  // Subtle server mounting ear screws
-  ctx.fillStyle = '#64748b';
-  for (let y = 30; y < 500; y += 70) {
+  // 2. Left Mounting Ear (x: 0 to 68)
+  ctx.fillStyle = '#11151d';
+  ctx.fillRect(0, 8, 68, 496);
+
+  // Mounting flange screw holes
+  ctx.fillStyle = '#1e2430';
+  [30, 240, 470].forEach((y) => {
     ctx.beginPath();
-    ctx.arc(6, y, 2.5, 0, Math.PI * 2);
-    ctx.arc(250, y, 2.5, 0, Math.PI * 2);
+    ctx.arc(18, y, 6, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = '#384252';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+
+  // Silver U-Handle on Left Ear
+  const leftHandleGrad = ctx.createLinearGradient(32, 120, 52, 120);
+  leftHandleGrad.addColorStop(0, '#e2e8f0');
+  leftHandleGrad.addColorStop(0.5, '#f8fafc');
+  leftHandleGrad.addColorStop(1, '#94a3b8');
+  ctx.fillStyle = leftHandleGrad;
+  ctx.beginPath();
+  ctx.roundRect(36, 110, 16, 280, 8);
+  ctx.fill();
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Left Control Panel (Power button, LEDs, USB)
+  ctx.fillStyle = '#0a0d13';
+  ctx.fillRect(20, 310, 28, 120);
+  ctx.strokeStyle = '#222938';
+  ctx.strokeRect(20, 310, 28, 120);
+
+  // Power Button
+  ctx.beginPath();
+  ctx.arc(34, 330, 7, 0, Math.PI * 2);
+  ctx.fillStyle = '#1e2532';
+  ctx.fill();
+  ctx.strokeStyle = '#38bdf8';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Status LEDs (Power, Disk, NIC, Error)
+  const leds = [
+    { y: 352, color: '#10b981' }, // Power green
+    { y: 366, color: '#38bdf8' }, // Disk blue
+    { y: 380, color: '#38bdf8' }, // NIC blue
+    { y: 394, color: '#f59e0b' }, // Warning amber
+  ];
+  leds.forEach(({ y, color }) => {
+    ctx.beginPath();
+    ctx.arc(34, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+  });
+
+  // USB Port
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(28, 408, 12, 6);
+  ctx.fillStyle = '#0284c7';
+  ctx.fillRect(29, 411, 10, 2);
+
+  // 3. Right Mounting Ear (x: 956 to 1024)
+  ctx.fillStyle = '#11151d';
+  ctx.fillRect(956, 8, 68, 496);
+
+  // Mounting flange screw holes
+  [30, 240, 470].forEach((y) => {
+    ctx.beginPath();
+    ctx.arc(1006, y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#384252';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+
+  // Silver U-Handle on Right Ear
+  const rightHandleGrad = ctx.createLinearGradient(972, 120, 992, 120);
+  rightHandleGrad.addColorStop(0, '#94a3b8');
+  rightHandleGrad.addColorStop(0.5, '#f8fafc');
+  rightHandleGrad.addColorStop(1, '#e2e8f0');
+  ctx.fillStyle = rightHandleGrad;
+  ctx.beginPath();
+  ctx.roundRect(972, 110, 16, 280, 8);
+  ctx.fill();
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Right Model Badge "4U-24B SAS"
+  ctx.fillStyle = '#0284c7';
+  ctx.fillRect(962, 340, 26, 40);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 9px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('4U', 975, 354);
+  ctx.fillText('24B', 975, 370);
+
+  // 4. Center 24-Bay Hot-Swap Drive Caddy Array (4 columns x 6 rows)
+  const startX = 72;
+  const startY = 14;
+  const bayW = 216;
+  const bayH = 78;
+  const gapX = 6;
+  const gapY = 4;
+
+  let driveNum = 1;
+
+  for (let col = 0; col < 4; col++) {
+    for (let row = 0; row < 6; row++) {
+      const bx = startX + col * (bayW + gapX);
+      const by = startY + row * (bayH + gapY);
+
+      // Bay bezel container
+      ctx.fillStyle = '#151922';
+      ctx.fillRect(bx, by, bayW, bayH);
+      ctx.strokeStyle = '#273142';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(bx, by, bayW, bayH);
+
+      // Honeycomb vent slots (top area of caddy)
+      ctx.fillStyle = '#07090d';
+      for (let vx = bx + 6; vx < bx + bayW - 8; vx += 7) {
+        ctx.fillRect(vx, by + 4, 3.5, 9);
+      }
+
+      // Honeycomb vent slots (bottom area of caddy)
+      for (let vx = bx + 6; vx < bx + bayW - 8; vx += 7) {
+        ctx.fillRect(vx, by + bayH - 13, 3.5, 9);
+      }
+
+      // Center Horizontal Release Latch Handle (Signature ergonomic contour)
+      const latchY = by + 18;
+      const latchH = 42;
+      const latchW = bayW - 12;
+      const latchX = bx + 6;
+
+      // Handle base gradient
+      const latchGrad = ctx.createLinearGradient(latchX, latchY, latchX, latchY + latchH);
+      latchGrad.addColorStop(0, '#283140');
+      latchGrad.addColorStop(0.2, '#1a202c');
+      latchGrad.addColorStop(0.8, '#141923');
+      latchGrad.addColorStop(1, '#0a0d14');
+      ctx.fillStyle = latchGrad;
+      ctx.beginPath();
+      ctx.roundRect(latchX, latchY, latchW, latchH, 5);
+      ctx.fill();
+      ctx.strokeStyle = '#374357';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Ergonomic center grip indentation
+      ctx.fillStyle = '#0c0f16';
+      ctx.beginPath();
+      ctx.roundRect(latchX + 48, latchY + 8, latchW - 96, latchH - 16, 4);
+      ctx.fill();
+      ctx.strokeStyle = '#1e2636';
+      ctx.stroke();
+
+      // Left Blue Label Tab (With SAS / SATA Drive Number)
+      ctx.fillStyle = '#0284c7';
+      ctx.fillRect(latchX + 5, latchY + 6, 26, latchH - 12);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('SAS', latchX + 18, latchY + 18);
+      ctx.fillText(`${driveNum}`, latchX + 18, latchY + 31);
+
+      // Right Circular Blue Ring / Activity Light (Signature Hot-Swap Visual)
+      const ringX = latchX + latchW - 22;
+      const ringY = latchY + latchH / 2;
+
+      // Outer bezel ring
+      ctx.beginPath();
+      ctx.arc(ringX, ringY, 11, 0, Math.PI * 2);
+      ctx.fillStyle = '#0c0f16';
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Central LED Indicator dot
+      ctx.beginPath();
+      ctx.arc(ringX, ringY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#7dd3fc';
+      ctx.fill();
+
+      // Latch release click lever on the far right
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(latchX + latchW - 6, latchY + 12, 4, latchH - 24);
+
+      driveNum++;
+    }
   }
 
   const texture = new THREE.CanvasTexture(canvas);

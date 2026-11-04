@@ -99,7 +99,7 @@ export const PRDViewer: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-400">
-              Politeknik Penerbangan Makassar • Dokumen Persyaratan Produk (PRD) Resmi
+              Politeknik Penerbangan Makassar • Penulis & Pengembang: <strong className="text-sky-300 font-semibold">MUH. ANUGRAH NASIR</strong>
             </p>
           </div>
         </div>
@@ -152,9 +152,9 @@ export const PRDViewer: React.FC = () => {
               <span>Status:</span>
               <span className="text-emerald-400 font-semibold">{PRD_METADATA.status}</span>
             </div>
-            <div className="flex justify-between text-slate-400">
-              <span>Penyusun:</span>
-              <span className="text-white truncate max-w-[170px]">{PRD_METADATA.author}</span>
+            <div className="flex flex-col gap-0.5 text-slate-400">
+              <span className="text-[11px]">Penyusun / Pengembang:</span>
+              <span className="text-white font-semibold text-xs">{PRD_METADATA.author}</span>
             </div>
             <div className="flex justify-between text-slate-400">
               <span>Platform 3D:</span>

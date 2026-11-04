@@ -111,7 +111,11 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
               {healthStatus === 'CRITICAL' ? 'CRITICAL ALERT' : healthStatus === 'WARNING' ? 'WARNING' : 'HEALTHY'}
             </span>
           </div>
-          <p className="text-[11px] text-slate-400">Sistem Monitoring Ruangan Server 3D (Suhu, Kelembaban, Deteksi Asap)</p>
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-400 flex-wrap">
+            <span>Sistem Monitoring Ruangan Server 3D</span>
+            <span className="text-slate-600">•</span>
+            <span>Pengembang: <strong className="text-sky-300 font-semibold">MUH. ANUGRAH NASIR</strong></span>
+          </div>
         </div>
       </div>
 
